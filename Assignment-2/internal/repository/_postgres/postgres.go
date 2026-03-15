@@ -1,14 +1,16 @@
 package _postgres
 
 import (
+	"assignment-2/pkg/modules"
 	"context"
 	"fmt"
+	"log"
+
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"golang/pkg/modules"
 )
 
 type Dialect struct {
@@ -16,44 +18,34 @@ type Dialect struct {
 }
 
 func NewPGXDialect(ctx context.Context, cfg *modules.PostgreConfig) *Dialect {
-
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		cfg.Host, cfg.Port, cfg.Username, cfg.Password, cfg.DBName, cfg.SSLMode)
 
 	db, err := sqlx.Connect("postgres", dsn)
-
 	if err != nil {
-		panic(err)
+		log.Fatalf("failed to connect to postgres: %v", err)
 	}
 
-	err = db.Ping()
-
-	if err != nil {
-		panic(err)
+	if err = db.Ping(); err != nil {
+		log.Fatalf("failed to ping postgres: %v", err)
 	}
 
-	AutoMigrate(cfg)
+	autoMigrate(cfg)
 
-	return &Dialect{
-		DB: db,
-	}
+	return &Dialect{DB: db}
 }
 
-func AutoMigrate(cfg *modules.PostgreConfig) {
-
-	sourceURL := "/Users/abzalkabdoldaev/HOME/GolangCourse/Assignment-2/database/migrations"
+func autoMigrate(cfg *modules.PostgreConfig) {
+	sourceURL := "file://database/migrations"
 	databaseURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
 		cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBName, cfg.SSLMode)
 
 	m, err := migrate.New(sourceURL, databaseURL)
-
 	if err != nil {
-		panic(err)
+		log.Fatalf("migration init failed: %v", err)
 	}
 
-	err = m.UP()
-
-	if err != nil && err != migrate.ErrNoChange {
-		panic(err)
+	if err = m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatalf("migration up failed: %v", err)
 	}
 }

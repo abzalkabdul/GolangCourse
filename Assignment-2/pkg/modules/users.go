@@ -1,15 +1,21 @@
 package modules
 
-import (
-	"time"
-)
+type User struct {
+	ID        int    `db:"id"         json:"id"`
+	Name      string `db:"name"       json:"name"`
+	Email     string `db:"email"      json:"email"`
+	Age       int    `db:"age"        json:"age"`
+	CreatedAt string `db:"created_at" json:"created_at"`
+}
 
-type PostgreConfig struct {
-	Host        string
-	Port        string
-	Username    string
-	Password    string
-	DBName      string
-	SSLMode     string
-	ExecTimeOut time.Duration
+type CreateUserRequest struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Age   int    `json:"age"`
+}
+
+type UpdateUserRequest struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Age   int    `json:"age"`
 }
