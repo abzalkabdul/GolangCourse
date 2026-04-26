@@ -17,19 +17,17 @@ func NewUserHandler(uc *usecase.UserUsecase) *UserHandler {
 	return &UserHandler{uc: uc}
 }
 
-// writeJSON sends a JSON response with the given status code.
+// writeJSON sends a JSON response with the given status code
 func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(v)
 }
 
-// writeError sends a JSON error envelope.
 func writeError(w http.ResponseWriter, status int, msg string) {
 	writeJSON(w, status, map[string]string{"error": msg})
 }
 
-// GetUsers handles GET /users
 func (h *UserHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := h.uc.GetUsers()
 	if err != nil {
@@ -105,9 +103,12 @@ func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 func (h *UserHandler) GetPaginatedUsers(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
+	limit := queryInt(q.Get("limit"), 10)
+	offset := queryInt(q.Get("offset"), 0)
+
 	f := modules.UserFilter{
-		Page:      queryInt(q.Get("page"), 1),
-		PageSize:  queryInt(q.Get("page_size"), 10),
+		Page:      (offset / limit) + 1,
+		PageSize:  limit,
 		OrderBy:   q.Get("order_by"),
 		OrderDir:  q.Get("order_dir"),
 		Name:      q.Get("name"),
@@ -163,7 +164,7 @@ func extractID(path string) (int, error) {
 	return strconv.Atoi(parts[len(parts)-1])
 }
 
-// queryInt parses a query string value as int, returning fallback on failure.
+// queryInt parses a query string value as int, returning fallback on failure
 func queryInt(s string, fallback int) int {
 	if v, err := strconv.Atoi(s); err == nil && v > 0 {
 		return v

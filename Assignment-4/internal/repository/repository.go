@@ -6,7 +6,6 @@ import (
 	"assignment-4/pkg/modules"
 )
 
-// UserRepository defines all database operations for users.
 type UserRepository interface {
 	GetUsers() ([]modules.User, error)
 	GetUserByID(id int) (*modules.User, error)

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-// allowedColumns is the whitelist for ORDER BY / filter columns (SQL-injection protection).
+// allowedColumns is the whitelist for ORDER BY / filter columns (SQL-injection protection)
 var allowedColumns = map[string]string{
 	"id":         "id",
 	"name":       "name",
@@ -157,7 +157,7 @@ func (r *Repository) GetPaginatedUsers(f modules.UserFilter) (modules.PaginatedR
 		where = "WHERE " + strings.Join(conditions, " AND ")
 	}
 
-	// -- COUNT total matching rows --
+	// count total matching rows
 	var totalCount int
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM users %s", where)
 	err := r.db.DB.QueryRowContext(ctx, countQuery, args...).Scan(&totalCount)
@@ -165,7 +165,7 @@ func (r *Repository) GetPaginatedUsers(f modules.UserFilter) (modules.PaginatedR
 		return modules.PaginatedResponse{}, fmt.Errorf("GetPaginatedUsers count: %w", err)
 	}
 
-	// -- ORDER BY (whitelisted) --
+	// order by (whitelisted)
 	orderCol := "id" // default
 	if col, ok := allowedColumns[f.OrderBy]; ok {
 		orderCol = col
@@ -175,7 +175,7 @@ func (r *Repository) GetPaginatedUsers(f modules.UserFilter) (modules.PaginatedR
 		orderDir = "DESC"
 	}
 
-	// -- LIMIT / OFFSET --
+	// limit / offset
 	pageSize := f.PageSize
 	if pageSize <= 0 {
 		pageSize = 10
@@ -222,8 +222,7 @@ func (r *Repository) GetPaginatedUsers(f modules.UserFilter) (modules.PaginatedR
 	}, nil
 }
 
-// GetCommonFriends returns users who are friends with BOTH user1 and user2.
-// Uses a single JOIN query to avoid the N+1 problem.
+// used a single JOIN query to avoid the N+1 problem.
 func (r *Repository) GetCommonFriends(userID1, userID2 int) ([]modules.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), r.executionTimeout)
 	defer cancel()

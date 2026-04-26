@@ -9,7 +9,6 @@ import (
 
 const validAPIKey = "secret-api-key"
 
-// responseWriter wraps http.ResponseWriter to capture the status code for logging.
 type responseWriter struct {
 	http.ResponseWriter
 	statusCode int

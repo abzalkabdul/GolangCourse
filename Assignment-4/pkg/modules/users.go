@@ -2,7 +2,6 @@ package modules
 
 import "time"
 
-// User is the core domain model - extended with gender and birth_date for Assignment 3.
 type User struct {
 	ID        int       `db:"id"         json:"id"`
 	Name      string    `db:"name"       json:"name"`
@@ -13,7 +12,6 @@ type User struct {
 	CreatedAt time.Time `db:"created_at" json:"created_at"`
 }
 
-// PaginatedResponse wraps a page of users with pagination metadata.
 type PaginatedResponse struct {
 	Data       []User `json:"data"`
 	TotalCount int    `json:"totalCount"`
@@ -21,14 +19,11 @@ type PaginatedResponse struct {
 	PageSize   int    `json:"pageSize"`
 }
 
-// UserFilter holds all optional query-string filters + pagination + sorting.
 type UserFilter struct {
-	// Pagination
-	Page     int
-	PageSize int
-	// Sorting
-	OrderBy  string // column name, whitelisted before use
-	OrderDir string // "asc" or "desc"
+	Page      int
+	PageSize  int
+	OrderBy   string // column name, whitelisted before use
+	OrderDir  string // "asc" or "desc"
 	ID        *int
 	Name      string
 	Email     string

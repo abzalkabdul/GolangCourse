@@ -6,7 +6,6 @@ import (
 	"fmt"
 )
 
-// UserUsecase is the business-logic layer between handlers and repository.
 type UserUsecase struct {
 	repo repository.UserRepository
 }
